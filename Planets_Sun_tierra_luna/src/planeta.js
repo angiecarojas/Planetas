@@ -29,6 +29,8 @@ function Planeta(radius,textura,distancia){
 		}
 	};
 
+	
+
 	this.draw=function(scene){
 		scene.add(this.transformacion);
 	};
@@ -37,7 +39,5 @@ function Planeta(radius,textura,distancia){
 		this.satelites.push(satelite);
 		satelite.draw(this.mesh);
 	};
-
-
 
 };

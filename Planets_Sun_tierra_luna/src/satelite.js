@@ -21,6 +21,10 @@ function Satelite(radius,textura,distancia){
 		 this.transformacion.rotation.y=stepluna;
 	};
 
+	this.animar2=function(stepsun){
+		this.transformacion.rotation.y=stepsun;
+   };
+
 	this.draw=function(scene){
 		scene.add(this.transformacion);
 	};

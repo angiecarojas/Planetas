@@ -6,7 +6,10 @@ var tierra;
 var transformacionTierra;
 var step=0;
 var stepluna=0;
+var stepS=0;
+var stepsun=0;
 var mvluna=true;
+var mvsun=true;
 var sol;
 
 main();
@@ -20,6 +23,13 @@ function renderScene() {
 	tierra.animar(step,stepluna);
 	requestAnimationFrame(renderScene);
 	renderer.render(scene, camera);
+
+	stepS+=0.01;
+	if(mvsun) stepsun+=0.15;
+	else stepsun-=0.01;
+	sol.animar2(stepS,stepsun);
+	requestAnimationFrame(renderScene);
+	renderer.render(scene, camera);
 }
 function main() {
 
@@ -31,7 +41,7 @@ function main() {
 //add sol
 	sol = new Sun(6,'texture/sun.jpg');
 	sol.draw(scene);
-
+	
 
 //Add planeta
 	tierra= new Planeta(4,'texture/tierra.jpg',25);
@@ -62,3 +72,4 @@ $("#canvas").append(renderer.domElement);
 
 renderScene();
 }
+

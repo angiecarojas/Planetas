@@ -15,6 +15,14 @@ function Sun(radius,textura){
 	this.mesh.name = "Sun";
 
 
+	this.animar2=function(stepS,stepsun){
+		this.mesh.rotation.y=stepS;
+		this.transformacion.rotation.y=stepS;
+		for(i=0;i<this.satelites.length;i++){
+			this.satelites[i].animar(stepsun);
+			}
+		};
+
 	this.draw=function(scene){
 		scene.add(this.mesh);
 	};
