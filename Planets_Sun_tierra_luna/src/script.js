@@ -23,7 +23,7 @@ function renderScene() {
 }
 function main() {
 
-	renderer.setClearColor(0x000000,1.0);
+	renderer.setClearColor("#FFFFFF",1.0);
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.shadowMapEnabled = false; //no shadow casting
 	renderer.setSize(window.innerWidth, window.innerHeight);
