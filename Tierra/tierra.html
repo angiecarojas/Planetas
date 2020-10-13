@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="stylesheet" href="../css/custom.css">
+		<title>Three.js Cube</title>
+		
+		<style type="text/css">
+		html { overflow: hidden; }
+		body { margin: 0; padding: 0; overflow: hidden; font-family: Monospace; font-size: 13px; line-height: 20px; color: #333; }
+		a { color: #0088cc; text-decoration: none; }
+		a:hover, a:focus { color: #005580; text-decoration: underline; }
+		/* stats */
+		#fps, #ms { background: transparent !important; }
+		#fpsText, #msText { color: #aaa !important; }
+		#fpsGraph, #msGraph { display: none; }
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+		<script src="./three/three.js"></script>
+		<script src="./three/OrbitControls.js"></script>
+		<script>
+			var escena;
+		//crea un ambiente de gráficos
+		var camara;
+		//muestra la posición de un objeto determinado
+		var renderer;
+		var controlCamara;
+		//dibuja los pixeles en pantalla
+		//funcion de configuracion del renderizado
+		function crearRenderer() {
+		renderer = new THREE.WebGLRenderer({alpha: true, antialias : true});
+		renderer.setClearColor(0xffffff,0);
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.shadowMap.enabled = true;
+		//decirle al renderer que habilite el manejo de sombras
+		}
+		function crearCamara() {
+		camara = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+		camara.position.x = 0;
+		camara.position.y = 32;
+		camara.position.z = 32;
+		camara.name = 'camara';
+		camara.lookAt(escena.position);
+		controlCamara = new THREE.OrbitControls(camara);
+		// ubicar la camara apuntando al centro del objeto
+		}
+		function crearPlano() {
+		var planoGeometria = new THREE.PlaneGeometry(50, 50)
+		var planoMaterial = new THREE.MeshLambertMaterial({
+		color: 0xcccccc
+		});
+		var plano = new THREE.Mesh(planoGeometria, planoMaterial);
+		plano.receiveShadow = true; // decirle al plano que reciba sombra
+		plano.rotation.x = -0.5 * Math.PI;
+		plano.position.y = -5;
+		escena.add(plano);
+		}
+		
+		function crearNubes (){
+		var esferaGeometria = new THREE.SphereGeometry(10.1,100,100);
+		var nubeTextura = new THREE.Texture();
+		var loader = new THREE.ImageLoader();
+		loader.load('texturas/nubes.png', function(image){
+		nubeTextura.image = image ;
+		nubeTextura.needsUpdate = true ;
+		});
+		var nubeMaterial = new THREE.MeshBasicMaterial();
+		nubeMaterial.map = nubeTextura ;
+		nubeMaterial.transparent = true ;
+		var nube = new THREE.Mesh(esferaGeometria,nubeMaterial);
+		nube.name = 'nubes';
+		nube.position.y = 5;
+		escena.add(nube);
+		}
+		function crearTierra(){
+		var tierraGeometria = new THREE.SphereGeometry(10,100,100);
+		var tierraMaterial = crearMaterialTierra();
+		var tierra = new THREE.Mesh(tierraGeometria, tierraMaterial);
+		tierra.name = 'tierra';
+		tierra.castShadow = true;
+		tierra.position.y = 5;
+		escena.add(tierra);
+		}
+
+
+
+		function crearMaterialTierra(){
+		var tierraTextura = new THREE.Texture(); // la nueva version de threejs sugiere primero crear un objeto vacio de la textura;
+		var loader = new THREE.ImageLoader(); // carga imagenes js
+		loader.load('texturas/tierra.jpg', function (image){
+		tierraTextura.image = image; // una vez se carge la textura en memoria se debe asignar la imagen a la textura
+		tierraTextura.needsUpdate = true; //avisa al redner que se requiere actualizar el objeto con textura en la escena
+		}); //la funcion callback recibe un parametro que es la imagen
+		var normalTextura = new THREE.Texture(); // la nueva version de threejs sugiere primero crear un objeto vacio de la textura;
+		var loader = new THREE.ImageLoader(); // carga imagenes js
+		loader.load('texturas/tierranormal.jpg', function(image){
+		normalTextura.image = image; // una vez se carge la textura en memoria se debe asignar la imagen a la textura
+		normalTextura.needsUpdate = true; //avisa al redner que se requiere actualizar el objeto con textura en la escena
+		}); //la funcion callback recibe un parametro que es la imagen
+		
+		
+		var especularTextura = new THREE.Texture();
+		var loader = new THREE.ImageLoader();
+		loader.load('texturas/tierraespecular.jpg', function(image){
+		especularTextura.image = image;
+		especularTextura.needsUpdate = true;
+		});
+		
+		tierraMaterial = new THREE.MeshPhongMaterial();
+		tierraMaterial.map = tierraTextura; // asigno al maping la textura cargada en la memoria
+		
+		tierraMaterial.normalMap = normalTextura ;
+		tierraMaterial.normalScale = new THREE.Vector2( 0.7, 0.7 );
+		tierraMaterial.especularMap = especularTextura;
+		tierraMaterial.specular = new THREE.Color(0x262626);
+		return tierraMaterial;
+		}
+		function crearLuz() {
+		var luzDireccional = new THREE.DirectionalLight(0xffffff,1);
+		luzDireccional.position.set(100,100,-50);
+		luzDireccional.name = "luz direccional";
+		escena.add(luzDireccional);
+		var luzAmbiental = new THREE.AmbientLight(0x111111);
+		escena.add(luzAmbiental);
+		}
+		
+		function ejes() {
+		var ejes = new THREE.AxisHelper(30);
+		escena.add(ejes);
+		}
+		//funcion de configuración inicial de la escena
+		function init() {
+		escena = new THREE.Scene();
+		crearRenderer();
+		crearCamara();
+		crearLuz();
+		crearTierra();
+		// crearPlano();
+		crearNubes();
+		// ejes();
+		document.body.appendChild(renderer.domElement);
+		render();
+		}
+		function render() {
+		renderer.render(escena, camara);
+		controlCamara.update();
+		escena.getObjectByName('tierra').rotation.y += 0.0005;
+		escena.getObjectByName('nubes').rotation.y += 0.0007;
+		// escena.getObjectByName('tierra').position.x += 0.01;
+		// escena.getObjectByName('nubes').position.x +=  0.01;
+		// if (escena.getObjectByName('tierra').position.x > 5) {
+		//    escena.getObjectByName('tierra').position.y += 0.5;
+		//    escena.getObjectByName('nubes').position.y +=  0.5;
+		// }
+		// console.log(escena.getObjectByName('nubes').position);
+		
+		
+		//realiza recursion para dibujar cada fotograma.
+		requestAnimationFrame(render);
+		}
+		init();
+		</script>
+	</body>
+</html>

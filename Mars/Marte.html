@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="">
+		<title>Marte Three.js</title>	
+
+	</head>
+	<body>
+		<div id="container"></div>
+		<script src="three/three.js"></script>
+		<script src="three/OrbitControls.js"></script>
+		<script>
+			var escena;
+		//crea un ambiente de gráficos
+		var camara;
+		//muestra la posición de un objeto determinado
+		var renderer;
+		var controlCamara;
+		//dibuja los pixeles en pantalla
+		//funcion de configuracion del renderizado
+		function crearRenderer() {
+		renderer = new THREE.WebGLRenderer({alpha: true, antialias : true});
+		renderer.setClearColor(0xffffff,0);
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.shadowMap.enabled = true;
+		//decirle al renderer que habilite el manejo de sombras
+		}
+		
+		  
+		function crearCamara() {
+		camara = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+		camara.position.x = 0;
+		camara.position.y = 32;
+		camara.position.z = 32;
+		camara.name = 'camara';
+		camara.lookAt(escena.position);
+		controlCamara = new THREE.OrbitControls(camara);
+		// ubicar la camara apuntando al centro del objeto
+		}
+
+		
+		function crearPlano() {
+		var planoGeometria = new THREE.PlaneGeometry(50, 50)
+		var planoMaterial = new THREE.MeshLambertMaterial({
+		color: 0xcccccc
+		});
+		var plano = new THREE.Mesh(planoGeometria, planoMaterial);
+		plano.receiveShadow = true; // decirle al plano que reciba sombra
+		plano.rotation.x = -0.5 * Math.PI;
+		plano.position.y = -5;
+		escena.add(plano);
+		}
+
+		/*escena.background = new THREE.Color("#000000");
+		  //create texture
+		  var texture = new THREE.TextureLoader().load('texturas/universe.jpg');
+		  var material = new THREE.MeshBasicMaterial({
+			map: texture,
+			});*/
+
+		function crearMarte(){
+		var marteGeometria = new THREE.SphereGeometry(10,100,100);
+		var marteMaterial = crearMaterialMarte();
+		var marte = new THREE.Mesh(marteGeometria, marteMaterial);
+		marte.name = 'marte';
+		marte.castShadow = true;
+		marte.position.y = 5;
+		escena.add(marte);
+		}
+
+
+
+		function crearMaterialMarte(){
+		var marteTextura = new THREE.Texture(); // la nueva version de threejs sugiere primero crear un objeto vacio de la textura;
+		var loader = new THREE.ImageLoader(); // carga imagenes js
+		loader.load('texturas/mars2.jpg', function (image){
+		marteTextura.image = image; // una vez se carge la textura en memoria se debe asignar la imagen a la textura
+		marteTextura.needsUpdate = true; //avisa al redner que se requiere actualizar el objeto con textura en la escena
+		}); //la funcion callback recibe un parametro que es la imagen
+		var normalTextura = new THREE.Texture(); // la nueva version de threejs sugiere primero crear un objeto vacio de la textura;
+		var loader = new THREE.ImageLoader(); // carga imagenes js
+		loader.load('texturas/marsnormal.jpg', function(image){
+		normalTextura.image = image; // una vez se carge la textura en memoria se debe asignar la imagen a la textura
+		normalTextura.needsUpdate = true; //avisa al redner que se requiere actualizar el objeto con textura en la escena
+		}); //la funcion callback recibe un parametro que es la imagen
+		
+		
+		var especularTextura = new THREE.Texture();
+		var loader = new THREE.ImageLoader();
+		loader.load('texturas/marsbump.jpg', function(image){
+		especularTextura.image = image;
+		especularTextura.needsUpdate = true;
+		});
+		
+		marteMaterial = new THREE.MeshPhongMaterial();
+		marteMaterial.map = marteTextura; // asigno al maping la textura cargada en la memoria
+		
+		marteMaterial.normalMap = normalTextura ;
+		marteMaterial.normalScale = new THREE.Vector2( 0.7, 0.7 );
+		marteMaterial.especularMap = especularTextura;
+		marteMaterial.specular = new THREE.Color(0x262626);
+		return marteMaterial;
+		}
+		function crearLuz() {
+		var luzDireccional = new THREE.DirectionalLight(0xffffff,1);
+		luzDireccional.position.set(100,100,-50);
+		luzDireccional.name = "luz direccional";
+		escena.add(luzDireccional);
+		var luzAmbiental = new THREE.AmbientLight(0x111111);
+		escena.add(luzAmbiental);
+		}
+		
+		function ejes() {
+		var ejes = new THREE.AxisHelper(30);
+		escena.add(ejes);
+		}
+		//funcion de configuración inicial de la escena
+		function init() {
+		escena = new THREE.Scene();
+		crearRenderer();
+		crearCamara();
+		crearLuz();
+		crearMarte();
+		// crearPlano();
+		//crearNubes();
+		// ejes();
+		document.body.appendChild(renderer.domElement);
+		render();
+		}
+		function render() {
+		renderer.render(escena, camara);
+		controlCamara.update();
+		escena.getObjectByName('marte').rotation.y += 0.0005;
+		// console.log(escena.getObjectByName('nubes').position);
+		
+		
+		//realiza recursion para dibujar cada fotograma.
+		requestAnimationFrame(render);
+		}
+		init();
+		</script>
+	</body>
+</html>
