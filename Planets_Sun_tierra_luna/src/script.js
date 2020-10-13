@@ -1,6 +1,10 @@
 
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+var camera = new THREE.PerspectiveCamera(
+	45, 
+	window.innerWidth / window.innerHeight, 
+	0.1, 
+	1000);
 var renderer = new THREE.WebGLRenderer();
 var tierra;
 var transformacionTierra;
@@ -10,7 +14,6 @@ var mvluna=true;
 var sol;
 
 main();
-
 
 function renderScene() {
 
@@ -23,7 +26,7 @@ function renderScene() {
 }
 function main() {
 
-	renderer.setClearColor(0x000000,1.0);
+	renderer.setClearColor("#FFFFFF",1.0);
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.shadowMapEnabled = false; //no shadow casting
 	renderer.setSize(window.innerWidth, window.innerHeight);
